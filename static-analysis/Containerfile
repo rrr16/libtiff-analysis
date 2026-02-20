@@ -1,0 +1,41 @@
+FROM alt/sisyphus
+
+LABEL description="Container for static analysis of libtiff 4.4.0 with cppcheck"
+
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y \
+    git \
+    cppcheck \
+    libtool \
+    automake \
+    autoconf \
+    wget \
+    gcc \
+    make && \
+    apt-get clean
+
+# Setup workdir
+WORKDIR /workspace
+
+# Clone libtiff sources and checkout to 4.4.0 version
+RUN git clone http://git.altlinux.org/gears/l/libtiff.git && \
+    cd libtiff && \
+    git checkout 4.4.0-alt9
+
+# Configure project
+RUN cd libtiff && \
+    ./autogen.sh && \
+    ./configure
+
+# Create directory for cppcheck reports
+RUN mkdir /reports
+
+# Run cppcheck
+CMD cppcheck /workspace/libtiff/ \
+    -j$(nproc) \
+    --enable=all \
+    --error-exitcode=1 \
+    -I /workspace/libtiff/libtiff \
+    --suppress=missingIncludeSystem \
+    --output-file=/reports/libtiff_report.txt 2>&1
