@@ -7,12 +7,19 @@ RUN apt-get update && \
     apt-get install -y \
     git \
     cppcheck \
+    patch \
     libtool \
     automake \
     autoconf \
     wget \
     gcc \
-    make && \
+    make \
+    libjbig-devel \
+    libjpeg-devel \
+    zlib-devel \
+    libdeflate-devel \
+    liblzma-devel \
+    && \
     apt-get clean
 
 # Setup workdir
@@ -23,8 +30,12 @@ RUN git clone http://git.altlinux.org/gears/l/libtiff.git && \
     cd libtiff && \
     git checkout 4.4.0-alt9
 
-# Configure project
+# Copy script for applying patches
+COPY apply-patches.sh /workspace/libtiff/
+
+# Apply patches and configure project
 RUN cd libtiff && \
+    ./apply-patches.sh && \
     ./autogen.sh && \
     ./configure
 
@@ -37,5 +48,7 @@ CMD cppcheck /workspace/libtiff/ \
     --enable=all \
     --error-exitcode=1 \
     -I /workspace/libtiff/libtiff \
+    -I /workspace/libtiff/port \
+    -I /usr/include \
     --suppress=missingIncludeSystem \
     --output-file=/reports/libtiff_report.txt 2>&1
