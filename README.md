@@ -2,36 +2,16 @@
 
 ## Task 1: static analysis with cppcheck
 
-### Build the container
-
-Go to cd static-analysis directory:
-
-```
-cd static-analysis
-```
-
-Build the container:
-```
-podman build -t libtiff-static-analysis .
-```
-
 ### Run the analysis
 
-Make reports directory:
-
+To run static analysis use a script:
 ```
-mkdir reports
-```
-
-Run the analysis:
-
-```
-podman run --rm -v ./reports:/reports libtiff-static-analysis
+./run_static_analysis.sh
 ```
 
 ### Output
 
 After execution, the report will be available at:
 ```
-reports/libtiff_report.txt
+static-analysis/reports/libtiff_report.txt
 ```
