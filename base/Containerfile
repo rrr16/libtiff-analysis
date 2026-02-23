@@ -1,0 +1,39 @@
+FROM alt/sisyphus
+
+LABEL description="Base container for libtiff 4.4.0"
+
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y \
+    git \
+    patch \
+    libtool \
+    automake \
+    autoconf \
+    wget \
+    gcc \
+    make \
+    libjbig-devel \
+    libjpeg-devel \
+    zlib-devel \
+    libdeflate-devel \
+    liblzma-devel \
+    && \
+    apt-get clean
+
+# Setup workdir
+WORKDIR /workspace
+
+# Clone libtiff sources and checkout to 4.4.0 version
+RUN git clone http://git.altlinux.org/gears/l/libtiff.git && \
+    cd libtiff && \
+    git checkout 4.4.0-alt9
+
+# Copy script for applying patches
+COPY apply-patches.sh /workspace/libtiff/
+
+# Apply patches and configure project
+RUN cd libtiff && \
+    ./apply-patches.sh && \
+    ./autogen.sh && \
+    ./configure
