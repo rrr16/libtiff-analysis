@@ -15,3 +15,7 @@ After execution, the report will be available at:
 ```
 static-analysis/reports/libtiff_report.txt
 ```
+
+## Task2: static analysis findings
+
+Static analysis findings stored in `triage/TRIAGE.md`
