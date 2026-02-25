@@ -7,6 +7,12 @@ RUN apt-get update && \
     apt-get install -y cppcheck && \
     apt-get clean
 
+# Apply patches and configure project
+RUN cd libtiff && \
+    ./apply-patches.sh && \
+    ./autogen.sh && \
+    ./configure
+
 # Create directory for cppcheck reports
 RUN mkdir /reports
 
