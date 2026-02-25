@@ -1,5 +1,10 @@
 # libtiff-analysis
 
+Versions:
+
+- libtiff-4.4.0-alt9
+- cppcheck-2.18.1-alt1_0_12337740f
+
 ## Task 1: static analysis with cppcheck
 
 ### Run the analysis
