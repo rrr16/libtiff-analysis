@@ -1,0 +1,37 @@
+FROM libtiff-base:latest
+
+LABEL description="Container for fuzzing of libtiff 4.4.0 with afl++"
+
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y \
+    AFLplusplus \
+    libstdc++14-devel && \
+    apt-get clean
+
+WORKDIR /workspace/libtiff
+
+ENV CC=afl-clang-fast
+ENV CXX=afl-clang-fast++
+ENV AFL_SKIP_CPUFREQ=1
+
+# Apply patches, configure project and build
+RUN ./apply-patches.sh && \
+    ./autogen.sh && \
+    ./configure --disable-shared && \
+    make -j$(nproc)
+
+# Make input and output directories
+RUN mkdir input output
+
+# Copy seed.tiff to input/
+COPY seed.tiff /workspace/libtiff/input/
+
+RUN ls -l tools | grep tiffinfo
+
+# Run fuzzing
+CMD timeout 15m \
+    afl-fuzz \
+        -i input \
+        -o output \
+        -- ./tools/tiffinfo @@
